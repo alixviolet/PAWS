@@ -1,1 +1,4 @@
 # spectral_analysis
+If using linux/macOS, install iSpec directly from the guides at https://www.blancocuaresma.com/s/iSpec/manual/installation/linux or https://www.blancocuaresma.com/s/iSpec/manual/installation/osx/anacondapython
+If using windows, then you will need to set up a virtual machine to perform analysis. I did this using https://www.virtualbox.org/ and following the guide on https://linuxconfig.org/how-to-install-ubuntu-20-04-on-virtualbox. If the window refuses to go into fullscreen mode, follow the guide on https://www.itzgeek.com/post/how-to-install-virtualbox-guest-additions-on-ubuntu-20-04/.
+To install iSpec in the virtual machine, follow the guide at https://www.blancocuaresma.com/s/iSpec/manual/installation/linux/anacondapython. Make sure all of the packages from the list at https://www.blancocuaresma.com/s/iSpec/manual/installation/linux/apt are installed. 

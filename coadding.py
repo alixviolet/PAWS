@@ -25,6 +25,7 @@ ispec_dir = ispecpathWidget.value
 sys.path.insert(0, os.path.abspath(ispec_dir))
 import ispec 
 c_str=s1d_widget.value
+#print(c_str+'is the string')
 def degrade_norm(b):
     print('normalising')
     resolution=res_widget.value
@@ -39,26 +40,45 @@ def degrade_norm(b):
     print(paths)
     with out8:
         for p in paths:
+            print([f.name for f in os.scandir(p+'/') if f.is_file()])
             raw_spectra = [f.name for f in os.scandir(p+'/') if f.is_file() and str(c_str) in f.name] #and 'S1D' in f.name]
             print(raw_spectra)
             cor_spectrum = ispec.read_spectrum(p+'/'+raw_spectra[0])
             h=fits.open(p+'/'+raw_spectra[0])
             print(h)
-            print(h[1].data['wavelength'])
-            cor_spectrum['waveobs']=h[1].data['wavelength']
+            #print(h[1].data['wavelength'])
+            #]cor_spectrum['waveobs']=h[1].data['wavelength']
+            print(cor_spectrum['flux'])
+            #cor_spectrum['flux'] = [i/1e-13 for i in cor_spectrum['flux']]
+            print(cor_spectrum['flux'])
+            plt.plot(cor_spectrum['waveobs'],cor_spectrum['flux'])
             if str(unit.value) == 'Angstroms':
                 cor_spectrum['waveobs']=cor_spectrum['waveobs']/10
             snr = ispec.estimate_snr(cor_spectrum['flux'], num_points=20)  
             cor_spectrum['err'] = cor_spectrum['flux']/snr
+                                
+            logging.info("Radial velocity determination with template...")
+            template = ispec.read_spectrum(ispec_dir + "/input/spectra/templates/NARVAL.Sun.370_1048nm/template.txt.gz")
+            models, ccf = ispec.cross_correlate_with_template(cor_spectrum, template, \
+                                            lower_velocity_limit=-1000, upper_velocity_limit=1000, \
+                                            velocity_step=1.0, fourier=False)
+            components = len(models)
+            print(components)
+                    # First component:
+            rv = np.round(models[0].mu(), 2) # km/s
+            rv_err = np.round(models[0].emu(), 2) # km/s
+            cor_spectrum = ispec.correct_velocity(cor_spectrum, rv)
             if resolution > 47000:
                 to_resolution = 47000
                 deg_spectrum = ispec.convolve_spectrum(cor_spectrum, to_resolution, \
                                                                 from_resolution=resolution)
-                print(resolution)
+                print('degraded resolution')
             else:
                 to_resultion = resolution
                 deg_spectrum=cor_spectrum
-                                     #--- Continuum fit 
+                print('kept resolution the same')
+          #  deg_spectrum=cor_spectrum
+                                     #--- ontinuum fit 
             model = "Splines" # "Polynomy"
             degree = 2
             nknots = None # Automatic: 1 spline every 5 nm
@@ -68,7 +88,8 @@ def degrade_norm(b):
             order='median+max'
             median_wave_range=0.05
             max_wave_range=1.0
-
+            plt.scatter(deg_spectrum['waveobs'], deg_spectrum['flux'])
+            plt.show()
             star_continuum_model = ispec.fit_continuum(deg_spectrum, from_resolution=from_resolution, \
                                                         nknots=nknots, degree=degree, \
                                                         median_wave_range=median_wave_range, \
@@ -128,6 +149,7 @@ def coadd_spectra(b):
                 print('read spectrum!')
                 hdul = fits.open(p+'/'+raw_spectra[i])
                 hdr=hdul[0].header
+                spectrum['flux'] = [i/1e-13 for i in spectrum['flux']]
                 snr = ispec.estimate_snr(spectrum['flux'], num_points=10)                              
                 spectrum['err'] = spectrum['flux']/snr
                 snr_list.append(snr)

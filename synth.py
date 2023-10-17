@@ -177,7 +177,7 @@ def merged_synthesis(b):
         errs=[]
         for key,value in errors.items():
             errs.append(value*3)
-        errs[0] = (np.sqrt(errs[0]**2 +100**2)
+        errs[0] = (np.sqrt(errs[0]**2 +100**2))
 
 
 

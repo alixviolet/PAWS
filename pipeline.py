@@ -103,8 +103,8 @@ def parameters_from_ew(b):
             #nitial_vmic = 3.72610856804732
         if mask == 'K5':
             initial_teff=4440
-            initial_logg=4.3
-            initial_MH = 0.00
+            initial_logg=4.6
+            initial_MH = 0.3
             initial_alpha = 0.00
             initial_vmic = ispec.estimate_vmic(initial_teff, initial_logg, initial_MH)
         if mask == 'F3':

@@ -12,15 +12,17 @@ import matplotlib.pyplot as plt
 import math 
 from statistics import mean
 import ipywidgets as widgets
-    
 from ipywidgets import HBox, VBox
-    
-    
+
+
 from IPython.display import display
 
 
 from setup import datapathWidget,number,coadd, res_widget,ispecpathWidget, input_widget, max_widget, min_widget
 ispec_dir=ispecpathWidget.value
+
+if ispec_dir[-1] != '/':
+            ispec_dir=ispec_dir+'/'
 sys.path.insert(0, os.path.abspath(ispec_dir))
 import ispec 
 
@@ -95,17 +97,9 @@ def merged_synthesis(b):
         else:
             # MARCS
             solar_abundances_file = ispec_dir + "/input/abundances/Grevesse.2007/stdatom.dat"
-        #solar_abundances_file = ispec_dir + "/input/abundances/Asplund.2005/stdatom.dat"
-        #solar_abundances_file = ispec_dir + "/input/abundances/Asplund.2009/stdatom.dat"
-        #solar_abundances_file = ispec_dir + "/input/abundances/Anders.1989/stdatom.dat"
         print('solar abundances loaded')
         isotope_file = ispec_dir + "/input/isotopes/SPECTRUM.lst"
-        #atomic_linelist_file = ispec_dir + "/input/linelists/transitions/GESv6_atom_hfs_iso.420_920nm/atomic_lines.tsv"  
-        #atomic_linelist_file  = ispec_dir+"/home/ADF/axf859/iSpec/input/linelists/CCF/Atlas.Sun.372_926nm/mask.lst"
-        atomic_linelist_file="/home/ADF/axf859/iSpec/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
-        #atomic_linelist_file = "/home/ADF/axf859/iSpec/input/linelists/transitions/VALD.300_1100nm/atomic_lines.tsv"
-        
-        #atomic_linelist_file = ispec_dir + "/input/linelists/transitions/GESv6_atom_nohfs_noiso.420_920nm/atomic_lines.tsv"
+        atomic_linelist_file=ispec_dir +"/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
         
         # Load chemical information and linelist
         atomic_linelist = ispec.read_atomic_linelist(atomic_linelist_file, wave_base=np.min(spectrum['waveobs']), wave_top=np.max(spectrum['waveobs']))
@@ -170,7 +164,7 @@ def merged_synthesis(b):
                 code=code)
 
         #chisquared of how each line fits 
-
+        print(errors)
         data = []
         for key,value in params.items():
             data.append([key,value])
@@ -178,18 +172,15 @@ def merged_synthesis(b):
         for key,value in errors.items():
             errs.append(value*3)
         errs[0] = (np.sqrt(errs[0]**2 +100**2))
-
+        print(errs)
 
 
         df = pd.DataFrame(data, columns=['Parameter','Value'])
         df['Errors']=errs
         mh = df.at[2, 'Value']
         alpha = df.at[3, 'Value']
-        #feh = mh - math.log((0.694*(10**alpha))+0.306)
-        #feh_err = df.at[2, 'Errors']
-        #fe_dict = {'Parameter':'Fe/h', 'Value' : feh, 'Errors':feh_err}
-        #print(fe_dict)
-        #df=df.append(fe_dict, ignore_index=True)
+
+        
         df.to_csv(p +'/params_synth_pipeline.csv', index=False)
 
         stat=[]

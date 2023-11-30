@@ -12,18 +12,24 @@ import matplotlib.pyplot as plt
 import math 
 from statistics import mean
 import ipywidgets as widgets
-    
+
 from ipywidgets import HBox, VBox
-    
-    
+
+
 from IPython.display import display
 
 
-from setup import datapathWidget,number,coadd, res_widget,ispecpathWidget, input_widget
-ispec_dir=ispecpathWidget.value
-sys.path.insert(0, os.path.abspath(ispec_dir))
-import ispec 
+from setup import datapathWidget,number,coadd, res_widget,ispecpathWidget, input_widget, osx
 
+ispec_dir = ispecpathWidget.value
+if ispec_dir[-1] != '/':
+            ispec_dir=ispec_dir+'/'
+import ispec 
+oss = osx.value
+if oss == 'Mac/iOS':
+    code = 'moog'
+else:
+    code = 'width'
 def parameters_from_ew(b):
     
     resolution=res_widget.value
@@ -46,7 +52,7 @@ def parameters_from_ew(b):
         ####=============fitting line regions===========================
 
     
-        line_regions_with_atomic_data = ispec.read_line_regions(ispec_dir + "input/regions/47000_GES/{}_ew_ispec_good_for_params_all_extended.txt".format('width'))
+        line_regions_with_atomic_data = ispec.read_line_regions(ispec_dir + "input/regions/47000_GES/{}_ew_ispec_good_for_params_all_extended.txt".format(code))
 
 
 
@@ -118,13 +124,12 @@ def parameters_from_ew(b):
         #model = ispec_dir + "/input/atmospheres/MARCS.GES/"
         
         model = ispec_dir + "input/atmospheres/ATLAS9.Castelli/"
-        #atomic_linelist_file = ispec_dir + "/input/linelists/transitions/GESv6_atom_hfs_iso.420_920nm/atomic_lines.tsv"  
-        #atomic_linelist_file  = ispec_dir+"/home/ADF/axf859/iSpec/input/linelists/CCF/Atlas.Sun.372_926nm/mask.lst"
-        atomic_linelist_file="/home/ADF/axf859/iSpec/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
+
+        atomic_linelist_file=ispec_dir +"/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
         
-        #atomic_linelist_file = "/home/ADF/axf859/iSpec/input/linelists/transitions/VALD.300_1100nm/atomic_lines.tsv"
+       
         
-        #atomic_linelist_file = ispec_dir + "/input/linelists/transitions/GESv6_atom_nohfs_noiso.420_920nm/atomic_lines.tsv"
+  
         solar_abundances_file = ispec_dir + "/input/abundances/Grevesse.2007/stdatom.dat"
         # Load model atmospheres
         modeled_layers_pack = ispec.load_modeled_layers_pack(model)
@@ -167,7 +172,7 @@ def parameters_from_ew(b):
                             outliers_detection = "sigma_clipping", \
                             #sigma_level = 3, \
                             tmp_dir = None, \
-                            code='width')
+                            code=code)
 
         params, errors, status, x_over_h, selected_x_over_h, fitted_lines_params, used_linemasks = results
         data = []
@@ -205,27 +210,14 @@ def parameters_from_ew(b):
         element = [row[0] for row in used_linemasks]
         lower_state_ev_1 = [lower_state_e[i] for i in range(len(lower_state_e)) if element[i]=='Fe 1'] 
         lower_state_ev_2 = [lower_state_e[i] for i in range(len(lower_state_e)) if element[i]=='Fe 2' ] 
-        #print(len(lower_state_ev_1))
-        #print(len(lower_state_e))
-        #print(len(x_over_h))
-        #print(len(x_h))
+
         
         
         avg = [mean(x_h) for i in range(len(lower_state_e))]
         x_h_1 = [x_h[i] for i in range(len(x_h)) if element[i]=='Fe 1' ] 
-        #x_h_1 = [x_over_h[i] for i in range(len(x_over_h)) if element[i]=='Fe 1' ]
-        #print(len(x_h_1))
+
         x_h_2 = [x_h[i] for i in range(len(x_h)) if element[i]=='Fe 2' ] 
-        #fig, ax = plt.subplots(figsize=(12, 6))
-        #ax.scatter(lower_state_ev_1, x_h_1)
-        #ax.scatter(lower_state_ev_2, x_h_2, c='orange')
-        #ax.plot(lower_state_e, avg, color='red')
-        #ax.legend(['Fe 1','Fe 2', '[M/H]'])
-        #plt.ylim([-1.5, 1.5])
-        #plt.xlabel('Lower State (eV)')
-        #plt.ylabel('[M/H]')
-        #plt.savefig(p+'/EW_abundances.jpg', bbox_inches='tight', dpi=100)
-        #plt.show()
+
 
     return 
 run = widgets.Button(description='Run Analysis Preparation')

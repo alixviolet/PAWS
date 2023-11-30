@@ -19,13 +19,15 @@ from ipywidgets import HBox, VBox
 from IPython.display import display
 
 
+
 from setup import datapathWidget,number,coadd, res_widget,ispecpathWidget, max_widget, min_widget, s1d_widget,unit
 ispec_dir = ispecpathWidget.value
 
-sys.path.insert(0, os.path.abspath(ispec_dir))
+if ispec_dir[-1] != '/':
+            ispec_dir=ispec_dir+'/'
 import ispec 
 c_str=s1d_widget.value
-#print(c_str+'is the string')
+
 def degrade_norm(b):
     print('normalising')
     resolution=res_widget.value
@@ -46,8 +48,7 @@ def degrade_norm(b):
             cor_spectrum = ispec.read_spectrum(p+'/'+raw_spectra[0])
             h=fits.open(p+'/'+raw_spectra[0])
             print(h)
-            #print(h[1].data['wavelength'])
-            #]cor_spectrum['waveobs']=h[1].data['wavelength']
+
             print(cor_spectrum['flux'])
             #cor_spectrum['flux'] = [i/1e-13 for i in cor_spectrum['flux']]
             print(cor_spectrum['flux'])
@@ -223,7 +224,6 @@ def coadd_spectra(b):
 go.on_click(coadd_spectra)
 
 
-#######if coadd.value=='No'; spectra still need to be degraded. save all spectra as 'prepared_step_1.fits', then when normalising in next module save as 'prepared_step_2.fits' etc.....
     
 
     

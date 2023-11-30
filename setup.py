@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import math 
 from statistics import mean
 import ipywidgets as widgets
-    
+   
 from ipywidgets import HBox, VBox
     
     
@@ -36,8 +36,10 @@ box3=widgets.HBox([widgets.HBox([ispecpathWidget, get_path]), out3])
 
 def set_ispec(b):
     with out3:
-        ispec_dir = str(ispecpathWidget.value)
-        sys.path.insert(0, os.path.abspath(ispec_dir))
+        ispec_dir = ispecpathWidget.value
+        if ispec_dir[-1] != '/':
+            ispec_dir=ispec_dir+'/'
+        sys.path.insert(0, ispec_dir)
         import ispec 
         print('iSpec Imported')
         return
@@ -206,9 +208,7 @@ def set_str(a):
     return
 sel_str.on_click(set_str)
 display(box7)
-#ispec_dir
-#sys.path.insert(0, os.path.abspath(ispec_dir))   
-#import ispec
+
 
 print('What is the wavelength unit of your spectra?')
 unit=widgets.ToggleButtons(
@@ -216,9 +216,7 @@ unit=widgets.ToggleButtons(
     description='',
     disabled=False,
     button_style='danger', 
-    default=None,# 'success', 'info', 'warning', 'danger' or ''
-    #tooltips=['Description of slow', 'Description of regular', 'Description of fast'],
-     #icons=['check'] * 3
+    default=None,
 )
 #'coadd.style.button_color = '#ffbc3c'
 unitt=widgets.Button(description='Done')
@@ -229,8 +227,6 @@ box8=widgets.VBox([widgets.VBox([unit, unitt]),out8])
 def sel_unit(a):
     with out8:
         print('You have selected: '+str(unit.value))
-        #if str(unit.value) == 'Angstroms':
-            #print('The wavelength scale will be converted to nanometres')
 
             
     
@@ -238,52 +234,34 @@ unitt.on_click(sel_unit)
 display(box8)
 
 
+#OS to determine width or moog
 
+print('What is your OS?')
+osx=widgets.ToggleButtons(
+    options=['Ubuntu/Linux', 'Mac/iOS'],
+    description='',
+    disabled=False,
+    button_style='danger', 
+    default=None,
+)
 
-#folderpathWidget = widgets.Text(
- #   placeholder='Enter Data Path',
-  #  description='Data Path:',
-   # disabled=False,
-    #style={'description_width': 'initial'}
-#)
+osxx=widgets.Button(description='Done')
+osxx.style.button_color = '#ffbc3c'
 
-#get_path=widgets.Button(description='iSpec Path Selected')
-#box=widgets.HBox([ispecpathWidget,get_path])
-#out=widgets.Output(layout={'border': '1px solid black'})
-#def set_paths():
- #   data_path = folderpathWidget.value
-  #  ispec_path = ispecpathWidget.value
-   # return data_path, ispec_path
-#def printing(a):
-    #global data_path
-    #data_path = folderpathWidget.value
-    #display(box)
- #   global ispec_path
-  #  ispec_path = ispecpathWidget.value
-   # sys.path.insert(0, os.path.abspath(ispec_dir))
-    #print(data_path, ispec_path)
-    #return ispec_path
-#def paths():
- #   display(box)
-    #get_path.on_click(printing)
-  #  ispec_dir=get_path.on_click(printing)[0]
-   # sys.path.insert(0, os.path.abspath(ispec_dir))
-    #return get_path.on_click(printing)
+out9=widgets.Output(layout={'border': '1px solid black'})
+box9=widgets.VBox([widgets.VBox([osx, osxx]),out9])
+def sel_os(a):
+    with out9:
+        if osx.value == 'Ubuntu/Linux':
+            print('You have selected: '+str(osx.value) +', the width radiative transfer code will be used.')
+        else:
+            print('You have selected: ' + str(osx.value)+', the moog radiative transfer code will be used.')
 
+            
     
-#ispec_dir = paths()[0]+'/' #Change this if necessary
-#sys.path.insert(0, os.path.abspath(ispec_dir))
-#import ispec
+osxx.on_click(sel_os)
+display(box9)
 
-#LOG_LEVEL = "warning"
-#LOG_LEVEL = "info"
-#logger = logging.getLogger() # root logger, common for all
-#logger.setLevel(logging.getLevelName(LOG_LEVEL.upper()))
 
-#%matplotlib inline
-
-#global dat_path
-#dat_path=paths[0]
-#global 
     
     

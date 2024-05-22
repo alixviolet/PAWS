@@ -36,12 +36,14 @@ def merged_synthesis(b):
     code='spectrum'
     
     resolution=res_widget.value
+    #resolution = 115000
     mask = input_widget.value
-    if resolution >= 47000:
-        to_resolution = 47000
+    #if resolution >= 47000:
+        #to_resolution = 47000
                 
-    elif resolution <47000:
-        to_resolution = resolution
+    #elif resolution <47000:
+     #   to_resolution = resolution
+    to_resolution = resolution
     if number.value=='Multiple':
         paths = [ f.path for f in os.scandir(datapathWidget.value) if f.is_dir()]
     if number.value=='Single':
@@ -99,7 +101,7 @@ def merged_synthesis(b):
             solar_abundances_file = ispec_dir + "/input/abundances/Grevesse.2007/stdatom.dat"
         print('solar abundances loaded')
         isotope_file = ispec_dir + "/input/isotopes/SPECTRUM.lst"
-        atomic_linelist_file=ispec_dir +"/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
+        atomic_linelist_file=ispec_dir + "/input/linelists/transitions/GESv6_atom_hfs_iso.420_920nm/atomic_lines.tsv"#"/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
         
         # Load chemical information and linelist
         atomic_linelist = ispec.read_atomic_linelist(atomic_linelist_file, wave_base=np.min(spectrum['waveobs']), wave_top=np.max(spectrum['waveobs']))
@@ -119,7 +121,7 @@ def merged_synthesis(b):
 
 
 
-        free_params = ["vsini","teff", "logg"]
+        free_params = ["vsini","logg","teff","mh"]
         print('free parameters set')
         # Free individual element abundance
 
@@ -131,7 +133,8 @@ def merged_synthesis(b):
         linelist_free_loggf = None
 
         # Line regions
-        line_regions = ispec.read_line_regions(ispec_dir + "/input/regions/47000_GES/{}_synth_good_for_params_all_extended.txt".format(code))
+        line_regions = ispec.read_line_regions('/home/ADF/axf859/PAWS/solar/SOPHIE/solar_line_regions_all_synth.txt')
+        #line_regions = ispec.read_line_regions('/home/ADF/axf859/iSpec/input/regions/47000_SPECTRUM/spectrum_synth_good_for_params_all_extended.txt')
         print('line regions read')
         ## Select only some lines to speed up the execution if desired, but this isn't recommended
        # line_regions = line_regions[np.logical_or(line_regions['note'] == 'Ti 1', line_regions['note'] == 'Ti 2')]
@@ -156,7 +159,7 @@ def merged_synthesis(b):
                 linemasks=line_regions, \
                 enhance_abundances=True, \
                 use_errors = True, \
-                vmic_from_empirical_relation = False, \
+                vmic_from_empirical_relation = True, \
                 vmac_from_empirical_relation = True, \
                 max_iterations=max_iterations, \
                 tmp_dir = None, \

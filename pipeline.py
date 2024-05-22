@@ -34,11 +34,12 @@ def parameters_from_ew(b):
     
     resolution=res_widget.value
     mask = input_widget.value
-    if resolution >= 47000:
-        to_resolution = 47000
+    #if resolution >= 47000:
+     #   to_resolution = 47000
                 
-    elif resolution <47000:
-        to_resolution = resolution
+    #elif resolution <47000:
+     #   to_resolution = resolution
+    to_resolution = resolution
     if number.value=='Multiple':
         paths = [ f.path for f in os.scandir(datapathWidget.value) if f.is_dir()]
     if number.value=='Single':
@@ -52,12 +53,12 @@ def parameters_from_ew(b):
         ####=============fitting line regions===========================
 
     
-        line_regions_with_atomic_data = ispec.read_line_regions(ispec_dir + "input/regions/47000_GES/{}_ew_ispec_good_for_params_all_extended.txt".format(code))
+        line_regions_with_atomic_data = ispec.read_line_regions('/home/ADF/axf859/PAWS/solar/HARPS/solar_line_regions_all_ew_12.txt')
+        #print(line_regions_with_atomic_data[0])
 
 
 
-
-        line_regions_with_atomic_data = line_regions_with_atomic_data[np.logical_or(line_regions_with_atomic_data['note'] == "Fe 1", line_regions_with_atomic_data['note'] == "Fe 2")]
+        line_regions_with_atomic_data = line_regions_with_atomic_data[np.logical_or(line_regions_with_atomic_data['element'] == "Fe 1", line_regions_with_atomic_data['element'] == "Fe 2")]
 
         smoothed_star_spectrum = ispec.convolve_spectrum(spectrum, 2*to_resolution)
         line_regions_with_atomic_data = ispec.adjust_linemasks(smoothed_star_spectrum, line_regions_with_atomic_data, max_margin=0.5)
@@ -102,7 +103,7 @@ def parameters_from_ew(b):
         #================Model spectra from EW===========================
         if mask =='G2':
             initial_teff = 5700#6000
-            initial_logg = 3.8#4.00
+            initial_logg = 4.0#4.00
             initial_MH = 0.05#0.00
             initial_alpha = 0.00
             initial_vmic =ispec.estimate_vmic(initial_teff, initial_logg, initial_MH)
@@ -110,7 +111,7 @@ def parameters_from_ew(b):
         if mask == 'K5':
             initial_teff=4440
             initial_logg=4.6
-            initial_MH = 0.3
+            initial_MH = 0.5
             initial_alpha = 0.00
             initial_vmic = ispec.estimate_vmic(initial_teff, initial_logg, initial_MH)
         if mask == 'F3':
@@ -125,12 +126,14 @@ def parameters_from_ew(b):
         
         model = ispec_dir + "input/atmospheres/ATLAS9.Castelli/"
 
-        atomic_linelist_file=ispec_dir +"/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
+        #atomic_linelist_file= ispec_dir +"/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
+        #ispec_dir + '/home/ADF/axf859/iSpec/input/linelists/transitions/GESv6_atom_hfs_iso.420_920nm/atomic_lines.tsv'
+        #ispec_dir +"/input/linelists/transitions/SPECTRUM.300_1100nm/atomic_lines.tsv"
         
        
         
   
-        solar_abundances_file = ispec_dir + "/input/abundances/Grevesse.2007/stdatom.dat"
+        solar_abundances_file = ispec_dir + "/input/abundances/Grevesse.1998/stdatom.dat"
         # Load model atmospheres
         modeled_layers_pack = ispec.load_modeled_layers_pack(model)
 
@@ -163,7 +166,7 @@ def parameters_from_ew(b):
 
         results = ispec.model_spectrum_from_ew(linemasks[efilter], modeled_layers_pack, \
                             solar_abundances, initial_teff, initial_logg, initial_MH, initial_alpha, initial_vmic, \
-                            free_params=["teff", "logg","vmic"], \
+                            free_params=["teff", "logg"], \
                             adjust_model_metalicity=True, \
                             max_iterations=max_iterations, \
                             enhance_abundances=True, \

@@ -42,7 +42,7 @@ def degrade_norm(b):
     print(paths)
     with out8:
         for p in paths:
-            print([f.name for f in os.scandir(p+'/') if f.is_file()])
+            #print([f.name for f in os.scandir(p+'/') if f.is_file()])
             raw_spectra = [f.name for f in os.scandir(p+'/') if f.is_file() and str(c_str) in f.name] #and 'S1D' in f.name]
             print(raw_spectra)
             cor_spectrum = ispec.read_spectrum(p+'/'+raw_spectra[0])
@@ -69,21 +69,22 @@ def degrade_norm(b):
             rv = np.round(models[0].mu(), 2) # km/s
             rv_err = np.round(models[0].emu(), 2) # km/s
             cor_spectrum = ispec.correct_velocity(cor_spectrum, rv)
-            if resolution > 47000:
-                to_resolution = 47000
-                deg_spectrum = ispec.convolve_spectrum(cor_spectrum, to_resolution, \
-                                                                from_resolution=resolution)
-                print('degraded resolution')
-            else:
-                to_resultion = resolution
-                deg_spectrum=cor_spectrum
-                print('kept resolution the same')
+            #if resolution > 47000:
+             #   to_resolution = 47000
+              #  deg_spectrum = ispec.convolve_spectrum(cor_spectrum, to_resolution, \
+                                                                #from_resolution=resolution)
+               # print('degraded resolution')
+            #else:
+                #to_resultion = resolution
+                #deg_spectrum=cor_spectrum
+                #print('kept resolution the same')
+            deg_spectrum = cor_spectrum
           #  deg_spectrum=cor_spectrum
                                      #--- ontinuum fit 
             model = "Splines" # "Polynomy"
             degree = 2
             nknots = None # Automatic: 1 spline every 5 nm
-            from_resolution = to_resolution = 47000
+            from_resolution = to_resolution = res_widget.value
 
             # Strategy: Filter first median values and secondly MAXIMUMs in order to find the continuum
             order='median+max'
@@ -150,7 +151,7 @@ def coadd_spectra(b):
                 print('read spectrum!')
                 hdul = fits.open(p+'/'+raw_spectra[i])
                 hdr=hdul[0].header
-                spectrum['flux'] = [i/1e-13 for i in spectrum['flux']]
+                #spectrum['flux'] = [i/1e-13 for i in spectrum['flux']]
                 snr = ispec.estimate_snr(spectrum['flux'], num_points=10)                              
                 spectrum['err'] = spectrum['flux']/snr
                 snr_list.append(snr)
@@ -168,13 +169,15 @@ def coadd_spectra(b):
                     rv_err = np.round(models[0].emu(), 2) # km/s
                     cor_spectrum = ispec.correct_velocity(spectrum, rv)
 
-                    if resolution > 47000:
-                        to_resolution = 47000
-                        deg_spectrum = ispec.convolve_spectrum(cor_spectrum, to_resolution, \
-                                                                from_resolution=resolution)
-                    else:
-                        to_resultion = 40000
-                        deg_spectrum=cor_spectrum
+                    #if resolution > 47000:
+                     #   to_resolution = 47000
+                      #  deg_spectrum = ispec.convolve_spectrum(cor_spectrum, to_resolution, \
+                                                               # from_resolution=resolution)
+                    #else:
+                     #   to_resultion = 40000
+                      #  deg_spectrum=cor_spectrum
+                    deg_spectrum=cor_spectrum
+                    
                                  #--- Continuum fit -------------------------------------------------------------
                     model = "Splines" # "Polynomy"
                     degree = 2

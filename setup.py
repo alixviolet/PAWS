@@ -45,7 +45,7 @@ def set_ispec(b):
         return
 
 get_path.on_click(set_ispec)
-#data_path = get_path.on_click(set_path)
+
 display(box3)
 #-----Getting Data Path--------------
 datapathWidget=widgets.Text(
@@ -81,9 +81,7 @@ number=widgets.ToggleButtons(
     description='',
     disabled=False,
     button_style='danger', 
-    default=None,# 'success', 'info', 'warning', 'danger' or ''
-    #tooltips=['Description of slow', 'Description of regular', 'Description of fast'],
-     #icons=['check'] * 3
+    default=None,
 )
 select=widgets.Button(description='Done')
 select.style.button_color = '#ffbc3c'
@@ -136,9 +134,7 @@ coadd=widgets.ToggleButtons(
     description='',
     disabled=False,
     button_style='danger', 
-    default=None,# 'success', 'info', 'warning', 'danger' or ''
-    #tooltips=['Description of slow', 'Description of regular', 'Description of fast'],
-     #icons=['check'] * 3
+    default=None,
 )
 coadd.style.button_color = '#ffbc3c'
 coaddd=widgets.Button(description='Done')
@@ -234,7 +230,7 @@ unitt.on_click(sel_unit)
 display(box8)
 
 
-#OS to determine width or moog
+#OS to determine width or moog, as width doesn't work for macs :(
 
 print('What is your OS?')
 osx=widgets.ToggleButtons(
